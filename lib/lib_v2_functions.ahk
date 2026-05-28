@@ -1,44 +1,12 @@
-GetSelText() {
-    oldClipboard := ClipboardAll()
-    A_Clipboard := ""
-    Send("^{Insert}")
-    if ClipWait(0.15) {
-        selText := A_Clipboard
-        A_Clipboard := oldClipboard
-        if selText && SubStr(selText, -1) != "`n"
-            return selText
-    }
-    A_Clipboard := oldClipboard
-    return ""
-}
+; Shared helpers for the AHK v2 mini runtime.
 
-UTF8encode(str) {
-    bytes := Buffer(StrPut(str, "UTF-8"))
-    StrPut(str, bytes, "UTF-8")
-    encoded := ""
-    loop bytes.Size - 1 {
-        encoded .= "%" Format("{:02X}", NumGet(bytes, A_Index - 1, "UChar"))
-    }
-    return encoded
-}
-
-URLencode(str) {
-    static from := ["!", "#", "$", "&", "'", "(", ")", "*", "+", ",", ":", ";", "=", "?", "@", "[", "]"]
-    static to := ["%21", "%23", "%24", "%26", "%27", "%28", "%29", "%2A", "%2B", "%2C", "%3A", "%3B", "%3D", "%3F", "%40", "%5B", "%5D"]
-    for index, search in from
-        str := StrReplace(str, search, to[index])
-    return str
-}
-
-SetSettingsValue(section, key, value) {
-    SetSettings(section, key, value)
-}
-
+; Show short non-blocking feedback without stealing focus.
 ShowMsg(msg, timeout := 2000) {
     ToolTip(msg)
     SetTimer(() => ToolTip(), -Abs(timeout))
 }
 
+; Store a full clipboard payload in one of the script-managed slots.
 ClipSaver(clipName) {
     global cClipboardAll, caClipboardAll, sClipboardAll
     if clipName = "s"
@@ -49,6 +17,7 @@ ClipSaver(clipName) {
         caClipboardAll := ClipboardAll()
 }
 
+; Dispatch a [Keys] value such as keyFunc_moveRight or keyFunc_moveRight(5).
 RunFunc(funcSpec) {
     funcSpec := Trim(funcSpec)
     if !funcSpec
@@ -73,6 +42,7 @@ RunFunc(funcSpec) {
     }
 }
 
+; Split simple comma-separated parameters while preserving quoted commas.
 ParseFuncParams(paramText) {
     params := []
     current := ""
@@ -112,8 +82,4 @@ CleanFuncParam(value) {
             return SubStr(value, 2, StrLen(value) - 2)
     }
     return value
-}
-
-WarnUnavailable(featureName) {
-    ShowMsg(featureName " is not migrated to AutoHotkey v2 yet.", 2000)
 }

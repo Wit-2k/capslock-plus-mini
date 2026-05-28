@@ -1,12 +1,11 @@
 global winBindings := Map()
 
+; Public key functions. Only functions with the keyFunc_ prefix can be bound from [Keys].
+
 keyFunc_doNothing() {
 }
 
-keyFunc_test() {
-    MsgBox("testing", , "T1")
-}
-
+; Small helpers for user-defined key bindings.
 keyFunc_send(text) {
     Send(text)
 }
@@ -27,6 +26,7 @@ keyFunc_openCpasDocs() {
     Run("https://capslox.com/capslock-plus/")
 }
 
+; Cursor movement.
 keyFunc_moveLeft(i := 1) {
     Send("{Left " i "}")
 }
@@ -87,6 +87,7 @@ keyFunc_moveToPageEnd() {
     Send("^{End}")
 }
 
+; Deletion helpers.
 keyFunc_deleteLine() {
     Send("{End}+{Home}{Backspace}")
 }
@@ -119,6 +120,7 @@ keyFunc_enter() {
     Send("{Enter}")
 }
 
+; Selection helpers.
 keyFunc_selectLeft(i := 1) {
     Send("+{Left " i "}")
 }
@@ -167,22 +169,7 @@ keyFunc_selectCurrentLine() {
     Send("{Home}+{End}")
 }
 
-keyFunc_pageUp() {
-    Send("{PgUp}")
-}
-
-keyFunc_pageDown() {
-    Send("{PgDn}")
-}
-
-keyFunc_jumpPageTop() {
-    Send("^{Home}")
-}
-
-keyFunc_jumpPageBottom() {
-    Send("^{End}")
-}
-
+; Two independent CapsLock clipboard slots.
 keyFunc_copy_1() {
     CopyToSlot("c", false, true)
 }
@@ -217,14 +204,8 @@ keyFunc_pasteSystem() {
         Send("^v")
 }
 
-keyFunc_switchClipboard() {
-    global whichClipboardNow
-    whichClipboardNow := Mod(whichClipboardNow + 1, 3)
-    ShowMsg("clipboard: " whichClipboardNow, 1000)
-}
-
 CopyToSlot(slotName, cut := false, fallbackToLine := false) {
-    global allowRunOnClipboardChange, whichClipboardNow
+    global allowRunOnClipboardChange
     oldClipboard := ClipboardAll()
     A_Clipboard := ""
     allowRunOnClipboardChange := false
@@ -239,7 +220,6 @@ CopyToSlot(slotName, cut := false, fallbackToLine := false) {
 
     if copied {
         ClipSaver(slotName)
-        whichClipboardNow := slotName = "c" ? 1 : 2
     }
     A_Clipboard := oldClipboard
 }
@@ -257,22 +237,7 @@ PasteSlot(clipData) {
     A_Clipboard := oldClipboard
 }
 
-keyFunc_mouseSpeedIncrease() {
-    mouseSpeed := Integer(GetSetting("Global", "mouseSpeed", "10")) + 1
-    if mouseSpeed > 20
-        mouseSpeed := 20
-    SetSettings("Global", "mouseSpeed", mouseSpeed)
-    ShowMsg("mouse speed: " mouseSpeed, 1000)
-}
-
-keyFunc_mouseSpeedDecrease() {
-    mouseSpeed := Integer(GetSetting("Global", "mouseSpeed", "10")) - 1
-    if mouseSpeed < 1
-        mouseSpeed := 1
-    SetSettings("Global", "mouseSpeed", mouseSpeed)
-    ShowMsg("mouse speed: " mouseSpeed, 1000)
-}
-
+; Minimal non-GUI window helpers.
 keyFunc_winPin() {
     try WinSetAlwaysOnTop(-1, "A")
 }
@@ -289,7 +254,7 @@ keyFunc_winTransparent() {
 
 keyFunc_winbind_binding(slot) {
     global winBindings
-    slot := String(slot)
+    slot := slot ""
     hwnd := WinExist("A")
     if hwnd {
         winBindings[slot] := hwnd
@@ -299,108 +264,10 @@ keyFunc_winbind_binding(slot) {
 
 keyFunc_winbind_activate(slot) {
     global winBindings
-    slot := String(slot)
+    slot := slot ""
     if winBindings.Has(slot) && WinExist("ahk_id " winBindings[slot]) {
         WinActivate("ahk_id " winBindings[slot])
     } else {
         ShowMsg("no bound window " slot, 1000)
     }
-}
-
-keyFunc_undoRedo() {
-    global ctrlZ
-    if ctrlZ {
-        Send("^z")
-        ctrlZ := false
-    } else {
-        Send("^y")
-        ctrlZ := true
-    }
-}
-
-keyFunc_doubleChar(left, right := "") {
-    if right = ""
-        right := left
-    SendText(left right)
-    Send("{Left " StrLen(right) "}")
-}
-
-keyFunc_doubleAngle() {
-    keyFunc_doubleChar("<", ">")
-}
-
-keyFunc_send_dot() {
-    Send(".")
-}
-
-keyFunc_mediaNext() {
-    Send("{Media_Next}")
-}
-
-keyFunc_translate() {
-    WarnUnavailable("Translation")
-}
-
-keyFunc_mathBoard() {
-    WarnUnavailable("Math Board")
-}
-
-keyFunc_getJSEvalString() {
-    WarnUnavailable("JavaScript evaluation")
-}
-
-keyFunc_tabScript() {
-    WarnUnavailable("CapsLock+Tab")
-}
-
-keyFunc_qbar() {
-    WarnUnavailable("qbar")
-}
-
-keyFunc_qbar_upperFolderPath() {
-    WarnUnavailable("qbar folder navigation")
-}
-
-keyFunc_qbar_lowerFolderPath() {
-    WarnUnavailable("qbar folder navigation")
-}
-
-keyFunc_activateSideWin(direction) {
-    WarnUnavailable("side-window activation")
-}
-
-keyFunc_clearWinMinimizeStach() {
-    WarnUnavailable("window minimize stack")
-}
-
-keyFunc_pushWinMinimizeStack() {
-    WarnUnavailable("window minimize stack")
-}
-
-keyFunc_unshiftWinMinimizeStack() {
-    WarnUnavailable("window minimize stack")
-}
-
-keyFunc_popWinMinimizeStack() {
-    WarnUnavailable("window minimize stack")
-}
-
-keyFunc_tabNext() {
-    Send("^{Tab}")
-}
-
-keyFunc_tabPrve() {
-    Send("^+{Tab}")
-}
-
-keyFunc_putWinToBottom() {
-    try WinMoveBottom("A")
-}
-
-keyFunc_pageMoveLineDown(count := 1) {
-    Send("{Down " count "}")
-}
-
-keyFunc_pageMoveLineUp(count := 1) {
-    Send("{Up " count "}")
 }

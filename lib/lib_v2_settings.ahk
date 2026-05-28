@@ -1,3 +1,6 @@
+; Runtime settings loader.
+; The mini edition reads only [Global] and [Keys] from CapsLock+settings.ini.
+
 SettingsInit() {
     global settingsModifyTime
     EnsureSettingsFiles()
@@ -5,6 +8,7 @@ SettingsInit() {
     try settingsModifyTime := FileGetTime("CapsLock+settings.ini", "M")
 }
 
+; Create ignored runtime INI files when the user runs the script for the first time.
 EnsureSettingsFiles() {
     global lang_settingsFileContent, lang_settingsDemoFileContent
 
@@ -17,6 +21,7 @@ EnsureSettingsFiles() {
         FileAppend(lang_settingsFileContent, "CapsLock+settings.ini", "UTF-16")
 }
 
+; Parse INI content into maps. [Keys] accepts only keyFunc_* values for safety.
 LoadSettings() {
     global CLSets
     sections := ["Global", "Keys"]
@@ -62,6 +67,7 @@ LoadSettings() {
     }
 }
 
+; Lightweight live reload for manual edits to CapsLock+settings.ini.
 MonitorSettingsFile() {
     global settingsModifyTime
     if !FileExist("CapsLock+settings.ini")
@@ -82,6 +88,7 @@ GetSetting(section, key, defaultValue := "") {
     return defaultValue
 }
 
+; Write one setting and refresh the in-memory maps immediately.
 SetSettings(section, key, value) {
     IniWrite(value, "CapsLock+settings.ini", section, key)
     LoadSettings()
@@ -102,13 +109,5 @@ SetDefaultKey(keyName, funcSpec) {
 }
 
 NormalizeSettingKey(keyName) {
-    keyName := StrLower(Trim(keyName))
-    keyName := StrReplace(keyName, "caps_lalt_backquote", "caps_lalt_backquote")
-    keyName := StrReplace(keyName, "caps_lalt_leftsquarebracket", "caps_lalt_leftsquarebracket")
-    keyName := StrReplace(keyName, "caps_lalt_rightsquarebracket", "caps_lalt_rightsquarebracket")
-    keyName := StrReplace(keyName, "caps_lalt_backslash", "caps_lalt_backslash")
-    keyName := StrReplace(keyName, "caps_backquote", "caps_backquote")
-    keyName := StrReplace(keyName, "caps_leftsquarebracket", "caps_leftsquarebracket")
-    keyName := StrReplace(keyName, "caps_rightsquarebracket", "caps_rightsquarebracket")
-    return keyName
+    return StrLower(Trim(keyName))
 }

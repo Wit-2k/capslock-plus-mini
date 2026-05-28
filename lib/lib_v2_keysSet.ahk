@@ -1,3 +1,6 @@
+; Default hotkey table for the mini edition.
+; User overrides from [Keys] are loaded first, then missing keys are filled below.
+
 KeysInit() {
     global keyset, CLSets
     keyset := Map()
@@ -7,11 +10,7 @@ KeysInit() {
             keyset[NormalizeSettingKey(keyName)] := funcSpec
     }
 
-    scheme := GetSetting("Global", "default_hotkey_scheme", "capslox")
-    if scheme = "capslock_plus"
-        KeySchemeInit_capslockPlus()
-    else
-        KeySchemeInit_capslox()
+    KeySchemeInit_capslox()
 }
 
 KeySchemeInit_capslox() {
@@ -33,7 +32,7 @@ KeySchemeInit_capslox() {
         ["caps_n", "keyFunc_selectDown(10)"],
         ["caps_o", "keyFunc_selectEnd"],
         ["caps_p", "keyFunc_home"],
-        ["caps_q", "keyFunc_qbar"],
+        ["caps_q", "keyFunc_doNothing"],
         ["caps_r", "keyFunc_delete"],
         ["caps_s", "keyFunc_moveLeft"],
         ["caps_t", "keyFunc_moveUp(10)"],
@@ -54,10 +53,10 @@ KeySchemeInit_capslox() {
         ["caps_8", "keyFunc_winbind_activate(8)"],
         ["caps_9", "keyFunc_winbind_activate(9)"],
         ["caps_0", "keyFunc_winbind_activate(10)"],
-        ["caps_minus", "keyFunc_qbar_upperFolderPath"],
-        ["caps_equal", "keyFunc_qbar_lowerFolderPath"],
+        ["caps_minus", "keyFunc_doNothing"],
+        ["caps_equal", "keyFunc_doNothing"],
         ["caps_backspace", "keyFunc_deleteLine"],
-        ["caps_tab", "keyFunc_tabScript"],
+        ["caps_tab", "keyFunc_doNothing"],
         ["caps_leftsquarebracket", "keyFunc_deleteToLineBeginning"],
         ["caps_rightsquarebracket", "keyFunc_doNothing"],
         ["caps_backslash", "keyFunc_doNothing"],
@@ -70,17 +69,17 @@ KeySchemeInit_capslox() {
         ["caps_space", "keyFunc_enter"],
         ["caps_ralt", "keyFunc_doNothing"],
         ["caps_f1", "keyFunc_openCpasDocs"],
-        ["caps_f2", "keyFunc_mathBoard"],
-        ["caps_f3", "keyFunc_translate"],
+        ["caps_f2", "keyFunc_doNothing"],
+        ["caps_f3", "keyFunc_doNothing"],
         ["caps_f4", "keyFunc_winTransparent"],
         ["caps_f5", "keyFunc_reload"],
         ["caps_f6", "keyFunc_winPin"],
         ["caps_f7", "keyFunc_doNothing"],
-        ["caps_f8", "keyFunc_getJSEvalString"],
+        ["caps_f8", "keyFunc_doNothing"],
         ["caps_f9", "keyFunc_doNothing"],
         ["caps_f10", "keyFunc_doNothing"],
         ["caps_f11", "keyFunc_doNothing"],
-        ["caps_f12", "keyFunc_switchClipboard"],
+        ["caps_f12", "keyFunc_doNothing"],
         ["caps_lalt_a", "keyFunc_moveWordLeft(3)"],
         ["caps_lalt_b", "keyFunc_moveDown(30)"],
         ["caps_lalt_c", "keyFunc_copy_2"],
@@ -142,67 +141,9 @@ KeySchemeInit_capslox() {
         ["caps_win_7", "keyFunc_winbind_binding(7)"],
         ["caps_win_8", "keyFunc_winbind_binding(8)"],
         ["caps_win_9", "keyFunc_winbind_binding(9)"],
-        ["caps_win_0", "keyFunc_winbind_binding(10)"],
-        ["caps_lalt_wheelup", "keyFunc_mouseSpeedIncrease"],
-        ["caps_lalt_wheeldown", "keyFunc_mouseSpeedDecrease"]
+        ["caps_win_0", "keyFunc_winbind_binding(10)"]
     ]
 
     for item in defaults
         SetDefaultKey(item[1], item[2])
-}
-
-KeySchemeInit_capslockPlus() {
-    global CLSets, keyset
-    KeySchemeInit_capslox()
-    overrides := [
-        ["caps_b", "keyFunc_moveDown(5)"],
-        ["caps_m", "keyFunc_selectDown(5)"],
-        ["caps_n", "keyFunc_selectWordRight"],
-        ["caps_t", "keyFunc_translate"],
-        ["caps_y", "keyFunc_moveUp(5)"],
-        ["caps_z", "keyFunc_undoRedo"],
-        ["caps_backquote", "keyFunc_winbind_activate(9)"],
-        ["caps_9", "keyFunc_doubleChar((,))"],
-        ["caps_0", "keyFunc_selectUp(5)"],
-        ["caps_minus", "keyFunc_pageUp"],
-        ["caps_equal", "keyFunc_pageDown"],
-        ["caps_leftsquarebracket", "keyFunc_doubleChar({,})"],
-        ["caps_rightsquarebracket", "keyFunc_doubleChar([,])"],
-        ["caps_quote", "keyFunc_doNothing"],
-        ["caps_comma", "keyFunc_doubleAngle"],
-        ["caps_dot", "keyFunc_send_dot"],
-        ["caps_slash", "keyFunc_doNothing"],
-        ["caps_f3", "keyFunc_mediaNext"],
-        ["caps_lalt_a", "keyFunc_activateSideWin(fl)"],
-        ["caps_lalt_b", "keyFunc_pageMoveLineDown(5)"],
-        ["caps_lalt_d", "keyFunc_activateSideWin(d)"],
-        ["caps_lalt_e", "keyFunc_activateSideWin(u)"],
-        ["caps_lalt_f", "keyFunc_activateSideWin(r)"],
-        ["caps_lalt_g", "keyFunc_activateSideWin(fr)"],
-        ["caps_lalt_h", "keyFunc_clearWinMinimizeStach"],
-        ["caps_lalt_j", "keyFunc_pushWinMinimizeStack"],
-        ["caps_lalt_k", "keyFunc_unshiftWinMinimizeStack"],
-        ["caps_lalt_l", "keyFunc_popWinMinimizeStack"],
-        ["caps_lalt_q", "keyFunc_activateSideWin(c)"],
-        ["caps_lalt_r", "keyFunc_tabNext"],
-        ["caps_lalt_s", "keyFunc_activateSideWin(l)"],
-        ["caps_lalt_w", "keyFunc_tabPrve"],
-        ["caps_lalt_y", "keyFunc_pageMoveLineUp(5)"],
-        ["caps_lalt_z", "keyFunc_putWinToBottom"],
-        ["caps_lalt_backquote", "keyFunc_winbind_binding(9)"],
-        ["caps_lalt_minus", "keyFunc_jumpPageTop"],
-        ["caps_lalt_equal", "keyFunc_jumpPageBottom"],
-        ["caps_lalt_backspace", "keyFunc_backspace"],
-        ["caps_lalt_leftsquarebracket", "keyFunc_doNothing"],
-        ["caps_lalt_semicolon", "keyFunc_doNothing"],
-        ["caps_lalt_comma", "keyFunc_doNothing"],
-        ["caps_lalt_dot", "keyFunc_doNothing"],
-        ["caps_lalt_slash", "keyFunc_doNothing"]
-    ]
-
-    for item in overrides {
-        keyName := NormalizeSettingKey(item[1])
-        if !CLSets["Keys"].Has(keyName)
-            keyset[keyName] := item[2]
-    }
 }

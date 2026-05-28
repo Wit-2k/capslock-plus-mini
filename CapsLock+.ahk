@@ -3,15 +3,15 @@
 #Warn
 #UseHook
 
-; CapsLock+ v2 migration bootstrap.
-; Phase 1 intentionally loads only v2-safe modules. Legacy v1 modules remain in
-; the repository and will be migrated back into the include graph in later phases.
+; capslock-plus-mini entry point.
+; This branch keeps the AHK v2 core hotkey layer and excludes the original GUI modules.
 
 if VerCompare(A_AhkVersion, "2.0") < 0 {
     MsgBox("CapsLock+ migration branch requires AutoHotkey v2. Please launch this script with AutoHotkey v2.", "CapsLock+", "Iconx")
     ExitApp()
 }
 
+; The script needs elevated privileges to intercept shortcuts consistently.
 fullCommandLine := DllCall("GetCommandLine", "str")
 if !(A_IsAdmin || RegExMatch(fullCommandLine, " /restart(?!\S)")) {
     try {
@@ -29,13 +29,10 @@ if FileExist("capslock+icon.ico")
 SetStoreCapsLockMode(false)
 ProcessSetPriority("High")
 
-global CLversion := "Version: 3.3.0.0-v2-bootstrap | 2026-05-28`n`nCopyright Junkai Chen"
 global cClipboardAll := ""
 global caClipboardAll := ""
 global sClipboardAll := ""
-global whichClipboardNow := 0
 global allowRunOnClipboardChange := true
-global ctrlZ := false
 global CapsLockActive := false
 global CapsLockWasUsed := false
 global keyset := Map()
@@ -51,6 +48,7 @@ global startupNoticeFrame := 0
 #Include lib\lib_v2_keysSet.ahk
 #Include lib\lib_v2_keysFunction.ahk
 
+; Keep the startup notice non-interactive and close it as soon as initialization ends.
 ShowStartupNotice()
 try {
     InitAll()
@@ -105,8 +103,7 @@ CloseStartupNotice() {
 
 CapsLock::
 {
-    global ctrlZ, CapsLockActive, CapsLockWasUsed, keyset
-    ctrlZ := true
+    global CapsLockActive, CapsLockWasUsed
     CapsLockActive := true
     CapsLockWasUsed := true
     SetTimer(ClearCapsLockWasUsed, -300)
@@ -138,7 +135,7 @@ ClearCapsLockWasUsed() {
 }
 
 HandleClipboardChange(clipboardType) {
-    global allowRunOnClipboardChange, CapsLockActive, CLSets, whichClipboardNow
+    global allowRunOnClipboardChange, CapsLockActive
     if allowRunOnClipboardChange && !CapsLockActive && GetSetting("Global", "allowClipboard", "1") != "0" {
         try {
             ClipSaver("s")
@@ -146,7 +143,6 @@ HandleClipboardChange(clipboardType) {
             Sleep(100)
             ClipSaver("s")
         }
-        whichClipboardNow := 0
     }
     allowRunOnClipboardChange := true
 }
@@ -161,6 +157,7 @@ $^v::
 #HotIf GetKeyState("CapsLock", "P")
 *LAlt::Return
 
+; Wildcard hotkeys let the same dispatcher handle plain CapsLock and CapsLock+LAlt.
 *WheelUp::
 {
     HandleCapsKey("wheelup")
@@ -284,119 +281,6 @@ $^v::
     HandleCapsKey("slash")
 }
 
-<!a::
-<!b::
-<!c::
-<!d::
-<!e::
-<!f::
-<!g::
-<!h::
-<!i::
-<!j::
-<!k::
-<!l::
-<!m::
-<!n::
-<!o::
-<!p::
-<!q::
-<!r::
-<!s::
-<!t::
-<!u::
-<!v::
-<!w::
-<!x::
-<!y::
-<!z::
-<!1::
-<!2::
-<!3::
-<!4::
-<!5::
-<!6::
-<!7::
-<!8::
-<!9::
-<!0::
-<!F1::
-<!F2::
-<!F3::
-<!F4::
-<!F5::
-<!F6::
-<!F7::
-<!F8::
-<!F9::
-<!F10::
-<!F11::
-<!F12::
-<!Space::
-<!Tab::
-<!Enter::
-<!BackSpace::
-<!RAlt::
-{
-    keyName := NormalizeHotkeyName(RegExReplace(A_ThisHotkey, "^<!"))
-    HandleCapsKey("lalt_" keyName)
-}
-
-<!`::
-{
-    HandleCapsKey("lalt_backquote")
-}
-
-<!-::
-{
-    HandleCapsKey("lalt_minus")
-}
-
-<!=::
-{
-    HandleCapsKey("lalt_equal")
-}
-
-<![::
-{
-    HandleCapsKey("lalt_leftsquarebracket")
-}
-
-<!]::
-{
-    HandleCapsKey("lalt_rightsquarebracket")
-}
-
-<!\::
-{
-    HandleCapsKey("lalt_backslash")
-}
-
-<!`;::
-{
-    HandleCapsKey("lalt_semicolon")
-}
-
-<!'::
-{
-    HandleCapsKey("lalt_quote")
-}
-
-<!,::
-{
-    HandleCapsKey("lalt_comma")
-}
-
-<!.::
-{
-    HandleCapsKey("lalt_dot")
-}
-
-<!/::
-{
-    HandleCapsKey("lalt_slash")
-}
-
 #1::
 #2::
 #3::
@@ -416,8 +300,13 @@ $^v::
 HandleCapsKey(keyName) {
     global CapsLockWasUsed
     keyName := NormalizeHotkeyName(keyName)
-    if !RegExMatch(keyName, "^(lalt|win)_") && GetKeyState("LAlt", "P")
-        keyName := "lalt_" keyName
+    ; Modifiers are detected at dispatch time so wildcard keys can share one handler.
+    if !RegExMatch(keyName, "^(lalt|win)_") {
+        if GetKeyState("LAlt", "P")
+            keyName := "lalt_" keyName
+        else if GetKeyState("LWin", "P") || GetKeyState("RWin", "P")
+            keyName := "win_" keyName
+    }
     try RunFunc(GetKeyBinding("caps_" keyName))
     CapsLockWasUsed := false
 }
