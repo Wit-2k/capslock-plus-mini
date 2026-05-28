@@ -1,82 +1,125 @@
-English | [中文](README_zh-CN.md)
+# capslock-plus-mini
 
----
+[中文](README_zh-CN.md) | English
 
-master branch: v3.0+
+`capslock-plus-mini` is a trimmed AutoHotkey v2 keyboard utility derived from CapsLock+. It keeps the core CapsLock modifier workflow and intentionally leaves the original GUI-heavy modules out for now.
 
-v2 branch: v2.x
+This project is a fork of [wo52616111/capslock-plus](https://github.com/wo52616111/capslock-plus).
 
-[Docs](https://capslox.com/capslock-plus/en.html)
+## Scope
 
+Implemented:
 
-## How to run the source code?
-1. Download and install [AutoHotkey (v1.1.+)](http://www.ahkscript.org/)
-2. Clone the Capslock+ source code
-3. Run `Capslock+.ahk`
+- CapsLock as a modifier key
+- Cursor movement and text selection
+- Deletion helpers
+- Independent CapsLock clipboard slots
+- Basic reload and documentation shortcuts
+- A small set of non-GUI window helpers
+- Live loading of `CapsLock+settings.ini` key overrides
 
-## How to set a custom function to a hotkey?
-1. There is a key function `keyFunc_example2` in demo.ahk.
-2. Add below setting under the [Keys] section in `CapsLock+settings.ini`:
-    `caps_f7=keyFunc_example2`
-3. Save, reload Capslock+ (CapsLock+F5)
-4. Press `CapsLock+F7` to invoke the function
+Not implemented in this mini version:
 
-* In order to avoid calling the internal functions, all the key functions are restricted to start with `keyfunc_`
+- qbar
+- Translation GUI/API
+- Math Board
+- CapsLock+Tab hotstrings
+- Startup loading animation
+- Full original window-binding persistence
+- User script compatibility for old AutoHotkey v1 scripts
 
-An example here:
+## Requirements
 
-### Replace Capslock+Q with Listary
-Listary is a good app launcher, now I want to add two features to it:
+- Windows
+- AutoHotkey v2.0+
 
-1. Activate Listary with `CapsLock+Q`
-2. I want to fill the selected text into the pop-up text input box
+If `.ahk` files are still associated with AutoHotkey v1, launch explicitly:
 
-We can make it like this:
-
-1. Copy the following code to `/userAHK/main.ahk`:
-```ahk
-keyfunc_listary(){
-    ; Get the selected text
-    selText:=getSelText()
-
-    ; Send win+F (the default hotkey of Listary) to activate Listary
-    sendinput, #{f}
-
-    ; Wait until Listary is activated
-    winwait, ahk_exe Listary.exe, , 0.5
-
-    ; If there is any selected text
-    if(selText){
-        ; Add "gg " before the selected text to google
-        selText:="gg " . selText
-
-        ; Fill the text, and press `home` key to move the cursor to the beginning,
-        ; in order to add other keywords if you need.
-        sendinput, %selText%{home}
-    }
-}
+```powershell
+& 'C:\Program Files\AutoHotkey\v2\AutoHotkey64.exe' 'D:\CS_Tech\AutoHotKey\capslock-plus\CapsLock+.ahk'
 ```
 
-2. Add a setting `caps_q=keyfunc_listary()` under `[Keys]` section in `CapsLock+settings.ini`, save, press `CapsLock+F5` to reload, done.
+## Run
 
-## How to modify the original functions?
-`CapsLock+.ahk` is the entry file, library files are in the `/lib` folder,
-the function of each file is as follows:
+Run `CapsLock+.ahk` with AutoHotkey v2. The script relaunches itself as administrator when needed.
 
-|Filename|Description|
-|:---|:---|
-|lib_bindWins.ahk|Window binding|
-|lib_clQ.ahk|qbar|
-|lib_clTab.ahk|CapsLock+Tab|
-|lib_functions.ahk|Some utils|
-|lib_init.ahk|Program initialization|
-|lib_jsEval.ahk|The calculation function implemented by using the IE engine, required by Math Board and CapsLock+Tab|
-|lib_json.ahk|json library|
-|lib_keysFunction.ahk|All the key functions|
-|lib_keysSet.ahk|Hotkey layouts|
-|lib_loadAnimation.ahk|Loading animation when the program starts|
-|lib_mathBoard.ahk|Math Board|
-|lib_mouseSpeed.ahk|Mouse speed modification|
-|lib_settings.ahk|Load the settings in CapsLock+settings.ini|
-|lib_ydTrans.ahk|Youdao Translation|
+Press `CapsLock+F5` to reload.
 
+## Default Shortcuts
+
+In the tables below, `CL` means CapsLock and `LAlt` means left Alt.
+
+### Cursor Movement
+
+| Shortcut | Action |
+|---|---|
+| `CL+E/S/D/F` | Move up/left/down/right |
+| `CL+A/G` | Move one word left/right |
+| `CL+P` | Move to line start |
+| `CL+;` | Move to line end |
+| `CL+LAlt+P` | Move to document start |
+| `CL+LAlt+;` | Move to document end |
+
+### Selection
+
+| Shortcut | Action |
+|---|---|
+| `CL+I/J/K/L` | Select up/left/down/right |
+| `CL+H` | Select one word left |
+| `CL+.` | Select one word right |
+| `CL+,` | Select current word |
+| `CL+LAlt+,` | Select current line |
+| `CL+U/O` | Select to line start/end |
+| `CL+LAlt+U/O` | Select to document start/end |
+
+### Deletion
+
+| Shortcut | Action |
+|---|---|
+| `CL+W` | Backspace |
+| `CL+R` | Delete |
+| `CL+[` | Delete to line start |
+| `CL+/` | Delete to line end |
+| `CL+LAlt+[` | Delete to document start |
+| `CL+LAlt+/` | Delete to document end |
+| `CL+Backspace` | Delete current line |
+
+### Clipboard
+
+| Shortcut | Action |
+|---|---|
+| `CL+C/X/V` | Copy/cut/paste through the first CapsLock clipboard slot |
+| `CL+LAlt+C/X/V` | Copy/cut/paste through the second CapsLock clipboard slot |
+| `Ctrl+V` | Paste from the system clipboard slot tracked by the script |
+
+When no text is selected, `CL+C` and `CL+X` fall back to copying or cutting the current line.
+
+### Other
+
+| Shortcut | Action |
+|---|---|
+| `CL+Enter` | Insert a new line below |
+| `CL+F1` | Open the original CapsLock+ website |
+| `CL+F5` | Reload script |
+| `CL+F6` | Toggle always-on-top for the active window |
+| `CL+F4` | Toggle transparency for the active window |
+
+## Configuration
+
+Runtime settings are stored in `CapsLock+settings.ini`, which is generated automatically and ignored by git.
+
+Override shortcuts in the `[Keys]` section:
+
+```ini
+[Keys]
+caps_f7=keyFunc_doNothing
+caps_lalt_f=keyFunc_moveRight(10)
+```
+
+Only functions whose names start with `keyFunc_` are accepted.
+
+## Development Notes
+
+- This branch is AutoHotkey v2-only.
+- Legacy AutoHotkey v1 modules remain in the repository for reference, but they are not loaded by the mini entry point unless migrated.
+- GUI modules should stay disabled until explicitly reintroduced.
