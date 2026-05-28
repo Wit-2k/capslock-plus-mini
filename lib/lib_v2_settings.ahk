@@ -19,7 +19,7 @@ EnsureSettingsFiles() {
 
 LoadSettings() {
     global CLSets
-    sections := ["Global", "QSearch", "QRun", "QWeb", "TabHotString", "QStyle", "TTranslate", "Keys"]
+    sections := ["Global", "Keys"]
     CLSets := Map()
     for section in sections
         CLSets[section] := Map()

@@ -15,6 +15,7 @@
 - 删除辅助
 - 独立的 CapsLock 剪贴板槽
 - 基础刷新和文档快捷键
+- 简短的启动/重载提示动画
 - 少量非 GUI 窗口辅助功能
 - 从 `CapsLock+settings.ini` 动态加载快捷键覆盖配置
 
@@ -24,9 +25,8 @@
 - 翻译 GUI/API
 - Math Board
 - CapsLock+Tab 热字符串
-- 启动加载动画
 - 原版完整的持久化窗口绑定
-- AutoHotkey v1 用户脚本兼容
+- 原 AutoHotkey v1 项目内置用户脚本示例
 
 ## 运行要求
 
@@ -42,6 +42,8 @@
 ## 启动
 
 用 AutoHotkey v2 运行 `CapsLock+.ahk`。脚本需要管理员权限时会自动重新以管理员身份启动。
+
+启动和重载时会显示一个小型非交互提示窗；初始化完成后会自动关闭。
 
 按 `CapsLock+F5` 可重载脚本。
 
@@ -121,5 +123,5 @@ caps_lalt_f=keyFunc_moveRight(10)
 ## 开发说明
 
 - 当前分支只面向 AutoHotkey v2。
-- 旧 AutoHotkey v1 模块仍保留在仓库中作为参考，但 mini 入口不会加载未迁移模块。
-- GUI 模块应保持禁用，直到明确决定重新引入。
+- 旧 AutoHotkey v1 模块和 GUI 代码已从 mini 分支删除。完整原始实现请参考上游仓库。
+- GUI 模块不在当前范围内，除非后续明确决定重新引入。

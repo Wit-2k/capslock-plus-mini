@@ -15,6 +15,7 @@ Implemented:
 - Deletion helpers
 - Independent CapsLock clipboard slots
 - Basic reload and documentation shortcuts
+- Brief startup/reload notice animation
 - A small set of non-GUI window helpers
 - Live loading of `CapsLock+settings.ini` key overrides
 
@@ -24,9 +25,8 @@ Not implemented in this mini version:
 - Translation GUI/API
 - Math Board
 - CapsLock+Tab hotstrings
-- Startup loading animation
 - Full original window-binding persistence
-- User script compatibility for old AutoHotkey v1 scripts
+- Bundled user script examples from the original AutoHotkey v1 project
 
 ## Requirements
 
@@ -42,6 +42,8 @@ If `.ahk` files are still associated with AutoHotkey v1, launch explicitly:
 ## Run
 
 Run `CapsLock+.ahk` with AutoHotkey v2. The script relaunches itself as administrator when needed.
+
+Startup and reload show a small non-interactive notice window. It closes automatically as soon as initialization finishes.
 
 Press `CapsLock+F5` to reload.
 
@@ -121,5 +123,5 @@ Only functions whose names start with `keyFunc_` are accepted.
 ## Development Notes
 
 - This branch is AutoHotkey v2-only.
-- Legacy AutoHotkey v1 modules remain in the repository for reference, but they are not loaded by the mini entry point unless migrated.
-- GUI modules should stay disabled until explicitly reintroduced.
+- Legacy AutoHotkey v1 modules and GUI-heavy code have been removed from this mini branch. See the upstream repository for the original full implementation.
+- GUI modules should stay out of scope unless explicitly reintroduced.
