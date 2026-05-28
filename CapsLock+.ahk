@@ -41,6 +41,9 @@ global CapsLockWasUsed := false
 global keyset := Map()
 global CLSets := Map()
 global settingsModifyTime := ""
+global startupNoticeGui := ""
+global startupNoticeText := ""
+global startupNoticeFrame := 0
 
 #Include lib\lib_v2_language.ahk
 #Include lib\lib_v2_functions.ahk
@@ -48,7 +51,12 @@ global settingsModifyTime := ""
 #Include lib\lib_v2_keysSet.ahk
 #Include lib\lib_v2_keysFunction.ahk
 
-InitAll()
+ShowStartupNotice()
+try {
+    InitAll()
+} finally {
+    CloseStartupNotice()
+}
 
 InitAll() {
     global
@@ -59,6 +67,40 @@ InitAll() {
     OnClipboardChange(HandleClipboardChange)
     SetTimer(MonitorSettingsFile, 500)
     Suspend(false)
+}
+
+ShowStartupNotice() {
+    global startupNoticeGui, startupNoticeText, startupNoticeFrame
+    startupNoticeFrame := 0
+    startupNoticeGui := Gui("+AlwaysOnTop -Caption +ToolWindow +E0x20", "capslock-plus-mini")
+    startupNoticeGui.BackColor := "20242c"
+    startupNoticeGui.MarginX := 18
+    startupNoticeGui.MarginY := 14
+    startupNoticeGui.SetFont("s10 cFFFFFF", "Segoe UI")
+    startupNoticeGui.AddText("w220 Center", "capslock-plus-mini")
+    startupNoticeGui.SetFont("s9 cB8C0CC", "Segoe UI")
+    startupNoticeText := startupNoticeGui.AddText("w220 Center y+6", "Starting")
+    startupNoticeGui.Show("AutoSize Center NoActivate")
+    UpdateStartupNotice()
+    SetTimer(UpdateStartupNotice, 120)
+}
+
+UpdateStartupNotice() {
+    global startupNoticeText, startupNoticeFrame
+    if !IsObject(startupNoticeText)
+        return
+    dots := ["", ".", "..", "..."]
+    startupNoticeFrame := Mod(startupNoticeFrame + 1, 4)
+    startupNoticeText.Text := "Starting" dots[startupNoticeFrame + 1]
+}
+
+CloseStartupNotice() {
+    global startupNoticeGui, startupNoticeText
+    SetTimer(UpdateStartupNotice, 0)
+    if IsObject(startupNoticeGui)
+        startupNoticeGui.Destroy()
+    startupNoticeGui := ""
+    startupNoticeText := ""
 }
 
 CapsLock::
