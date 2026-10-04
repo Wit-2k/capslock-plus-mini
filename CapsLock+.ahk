@@ -137,12 +137,9 @@ ClearCapsLockWasUsed() {
 HandleClipboardChange(clipboardType) {
     global allowRunOnClipboardChange, CapsLockActive
     if allowRunOnClipboardChange && !CapsLockActive && GetSetting("Global", "allowClipboard", "1") != "0" {
-        try {
-            ClipSaver("s")
-        } catch {
-            Sleep(100)
-            ClipSaver("s")
-        }
+        ; ClipSaver already retries; if the clipboard stays locked by another process
+        ; (frequent right after logon) ignore this notification instead of raising a dialog.
+        try ClipSaver("s")
     }
     allowRunOnClipboardChange := true
 }

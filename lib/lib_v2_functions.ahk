@@ -6,15 +6,32 @@ ShowMsg(msg, timeout := 2000) {
     SetTimer(() => ToolTip(), -Abs(timeout))
 }
 
+; Read the clipboard, retrying while another process temporarily holds it open.
+; Since Windows Vista/10 several processes open the clipboard during logon, so a single
+; ClipboardAll() call can raise "Can't open clipboard for reading". Raises the last error
+; when every attempt fails so callers can decide how to handle it.
+ClipboardAllSafe(retries := 10, delay := 50) {
+    lastError := ""
+    loop retries {
+        try
+            return ClipboardAll()
+        catch as err
+            lastError := err
+        if A_Index < retries
+            Sleep(delay)
+    }
+    throw lastError
+}
+
 ; Store a full clipboard payload in one of the script-managed slots.
 ClipSaver(clipName) {
     global cClipboardAll, caClipboardAll, sClipboardAll
     if clipName = "s"
-        sClipboardAll := ClipboardAll()
+        sClipboardAll := ClipboardAllSafe()
     else if clipName = "c"
-        cClipboardAll := ClipboardAll()
+        cClipboardAll := ClipboardAllSafe()
     else
-        caClipboardAll := ClipboardAll()
+        caClipboardAll := ClipboardAllSafe()
 }
 
 ; Dispatch a [Keys] value such as keyFunc_moveRight or keyFunc_moveRight(5).

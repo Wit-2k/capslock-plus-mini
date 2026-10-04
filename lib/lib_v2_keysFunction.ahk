@@ -206,7 +206,7 @@ keyFunc_pasteSystem() {
 
 CopyToSlot(slotName, cut := false, fallbackToLine := false) {
     global allowRunOnClipboardChange
-    oldClipboard := ClipboardAll()
+    oldClipboard := ClipboardAllSafe()
     A_Clipboard := ""
     allowRunOnClipboardChange := false
     Send(cut ? "^x" : "^{Insert}")
@@ -229,7 +229,7 @@ PasteSlot(clipData) {
         ShowMsg("clipboard slot is empty", 1000)
         return
     }
-    oldClipboard := ClipboardAll()
+    oldClipboard := ClipboardAllSafe()
     A_Clipboard := clipData
     Sleep(30)
     Send("^v")
