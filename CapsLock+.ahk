@@ -155,12 +155,15 @@ $^v::
 *LAlt::Return
 
 ; Wildcard hotkeys let the same dispatcher handle plain CapsLock and CapsLock+LAlt.
-*WheelUp::
+; The tilde prefix (pass-through) keeps the native scroll working: without it these
+; hotkeys swallow the mouse wheel for as long as their #HotIf condition is true, which
+; left the wheel dead after logon. Caps+wheel bindings still fire when configured.
+~*WheelUp::
 {
     HandleCapsKey("wheelup")
 }
 
-*WheelDown::
+~*WheelDown::
 {
     HandleCapsKey("wheeldown")
 }
